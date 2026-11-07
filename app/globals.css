@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f3f5f2;
+  --surface: #ffffff;
+  --foreground: #17241f;
+  --muted: #64736c;
+  --line: #dce3de;
+  --forest: #174b3e;
+  --forest-deep: #10392f;
+  --lime: #d8f36a;
+  --lime-soft: #eff8cf;
+  --coral: #b9443c;
+  --coral-soft: #fae9e6;
+  --amber: #805c11;
+  --amber-soft: #fff3d6;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100%;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), sans-serif;
+  letter-spacing: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 3px solid #6f9c23;
+  outline-offset: 3px;
+}
+
+.surface {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 6px;
+}
+
+.field {
+  min-height: 44px;
+  width: 100%;
+  border: 1px solid #cbd5cf;
+  border-radius: 4px;
+  background: #fff;
+  padding: 10px 12px;
+  color: var(--foreground);
+}
+
+.field::placeholder { color: #78857e; }
+.field:focus { border-color: var(--forest); outline: 3px solid rgb(23 75 62 / 15%); }
+.table-scroll { overflow-x: auto; }
+.table-scroll table { width: 100%; border-collapse: collapse; text-align: left; }
+.table-scroll th { color: var(--muted); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+.table-scroll th, .table-scroll td { border-bottom: 1px solid var(--line); padding: 13px 15px; vertical-align: middle; }
+.table-scroll tr:last-child td { border-bottom: 0; }
+.page-enter { animation: page-enter 360ms ease-out both; }
+
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 640px) {
+  .table-scroll table, .table-scroll thead, .table-scroll tbody, .table-scroll tr, .table-scroll th, .table-scroll td { display: block; }
+  .table-scroll thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+  .table-scroll tbody tr { padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .table-scroll tbody tr:last-child { border-bottom: 0; }
+  .table-scroll td { display: grid; grid-template-columns: minmax(100px, 0.7fr) minmax(0, 1fr); gap: 12px; border: 0; padding: 6px 14px; overflow-wrap: anywhere; }
+  .table-scroll td::before { content: attr(data-label); color: var(--muted); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+}
