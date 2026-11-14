@@ -4,12 +4,20 @@ types.setTypeParser(20, (valor) => Number.parseInt(valor, 10));
 types.setTypeParser(1700, (valor) => Number.parseFloat(valor));
 types.setTypeParser(1082, (valor) => valor);
 
+function cadenaConexion(): string | undefined {
+  const cadena = process.env.DATABASE_URL ?? process.env.POSTGRES_URL;
+  if (!cadena) return undefined;
+  const url = new URL(cadena);
+  url.searchParams.delete("sslmode");
+  return url.toString();
+}
+
 const global_ = globalThis as typeof globalThis & { __poolCalidad?: Pool };
 
 export const pool =
   global_.__poolCalidad ??
   new Pool({
-    connectionString: process.env.DATABASE_URL,
+    connectionString: cadenaConexion(),
     ssl: { rejectUnauthorized: false },
     max: 5,
   });
@@ -17,8 +25,8 @@ export const pool =
 if (process.env.NODE_ENV !== "production") global_.__poolCalidad = pool;
 
 function exigirConexion(): void {
-  if (!process.env.DATABASE_URL) {
-    throw new Error("Falta configurar DATABASE_URL en el archivo .env.local.");
+  if (!process.env.DATABASE_URL && !process.env.POSTGRES_URL) {
+    throw new Error("Falta configurar DATABASE_URL o POSTGRES_URL en el entorno.");
   }
 }
 

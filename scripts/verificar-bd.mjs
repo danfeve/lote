@@ -1,10 +1,18 @@
 import pg from "pg";
 
 const { Client } = pg;
-const connectionString = process.env.DATABASE_URL;
+function cadenaConexion() {
+  const cadena = process.env.DATABASE_URL ?? process.env.POSTGRES_URL;
+  if (!cadena) return undefined;
+  const url = new URL(cadena);
+  url.searchParams.delete("sslmode");
+  return url.toString();
+}
+
+const connectionString = cadenaConexion();
 
 if (!connectionString) {
-  console.error("FALLA: falta DATABASE_URL en .env.local.");
+  console.error("FALLA: falta DATABASE_URL o POSTGRES_URL en el entorno.");
   process.exit(1);
 }
 

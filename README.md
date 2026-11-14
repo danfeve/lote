@@ -45,7 +45,7 @@ Aplicación web para registrar lotes de producción, inspeccionar muestras y con
 ## Preparación
 
 1. Copie `.env.example` a `.env.local`.
-2. Configure `DATABASE_URL` con la cadena Transaction pooler de Supabase (puerto 6543).
+2. Configure `DATABASE_URL` con la cadena Transaction pooler de Supabase (puerto 6543). La aplicación también acepta `POSTGRES_URL` si usa la integración de Supabase en Vercel.
 3. Configure `AUTH_EMAIL`, `AUTH_PASSWORD`, `AUTH_NOMBRE` y `AUTH_SECRET`. Use una clave secreta aleatoria de al menos 32 caracteres para `AUTH_SECRET`.
 4. Aplique las migraciones y compruebe el esquema:
 
@@ -73,4 +73,4 @@ La aplicación se inició desde un repositorio vacío. El login que el plan supo
 
 ## Despliegue
 
-En Vercel configure `DATABASE_URL`, `AUTH_EMAIL`, `AUTH_PASSWORD`, `AUTH_NOMBRE` y `AUTH_SECRET` en Production, Preview y Development. Aplique las migraciones a Supabase antes de probar la aplicación. La aceptación A-01 a A-21 debe diligenciarse después del despliegue.
+En Vercel configure `DATABASE_URL` (o `POSTGRES_URL` del pooler), `AUTH_EMAIL`, `AUTH_PASSWORD`, `AUTH_NOMBRE` y `AUTH_SECRET` en Production, Preview y Development. Aplique las migraciones a Supabase antes de probar la aplicación. La aceptación A-01 a A-21 debe diligenciarse después del despliegue.
