@@ -11,7 +11,7 @@ export async function POST(request: Request) {
   if (!process.env.AUTH_EMAIL || !process.env.AUTH_PASSWORD || !process.env.AUTH_SECRET) {
     return respuestaError(
       "CONFIGURACION_INCOMPLETA",
-      "Configure AUTH_EMAIL, AUTH_PASSWORD y AUTH_SECRET en .env.local.",
+      "Configure AUTH_EMAIL, AUTH_PASSWORD y AUTH_SECRET en las variables de entorno del proyecto (en Vercel para producción o en .env.local para desarrollo local).",
       503,
     );
   }
