@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, Plus, Save, X } from "lucide-react";
 import { explicarMuestraMinima } from "@/lib/reglas/muestra";
 import type { FilaProveedor } from "@/lib/datos/tipos";
+import { VisualizadorDimensiones } from "@/components/calidad/VisualizadorDimensiones";
 
 export interface ValoresLote {
   codigo: string;
@@ -52,6 +53,9 @@ export function FormularioLote({
   }, []);
 
   const cantidadNumerica = Number(cantidad);
+  const medidasCompletas = [largoPiezaMm, anchoPiezaMm, altoPiezaMm].every(
+    (medida) => medida.trim() !== "" && Number.isFinite(Number(medida)) && Number(medida) > 0,
+  );
   const muestra = Number.isInteger(cantidadNumerica) && cantidadNumerica > 0
     ? explicarMuestraMinima(cantidadNumerica)
     : "Ingrese una cantidad producida para calcular la muestra mínima.";
@@ -135,6 +139,11 @@ export function FormularioLote({
           </div>
           <p className="mt-3 text-xs leading-5 text-[var(--muted)]">Ingrese las tres medidas de una pieza. Puede dejarlas vacías si aún no se conocen.</p>
         </fieldset>
+        <VisualizadorDimensiones
+          largoMm={medidasCompletas ? Number(largoPiezaMm) : undefined}
+          anchoMm={medidasCompletas ? Number(anchoPiezaMm) : undefined}
+          altoMm={medidasCompletas ? Number(altoPiezaMm) : undefined}
+        />
         <div className="rounded border border-[#d8e6d9] bg-[#f3f8f1] p-4"><p className="text-xs font-bold uppercase text-[var(--forest)]">Muestra mínima</p><p className="mt-1 text-sm leading-6">{muestra}</p></div>
         <div><div className="flex items-center justify-between gap-3"><label className="block text-sm font-semibold" htmlFor="proveedor">Proveedor</label><button type="button" onClick={() => setModalProveedor(true)} className="inline-flex min-h-9 items-center gap-1.5 rounded px-2 text-sm font-semibold text-[var(--forest)] hover:bg-[var(--lime-soft)]"><Plus size={15} />Agregar proveedor</button></div><select id="proveedor" className="field mt-2" required value={proveedorId} onChange={(evento) => setProveedorId(evento.target.value)}><option value="">Seleccione un proveedor</option>{proveedoresDisponibles.map((proveedor) => <option key={proveedor.id} value={proveedor.id}>{proveedor.nombre}{proveedor.activo ? "" : " · Inactivo (actual)"}</option>)}</select></div>
         {error && <p className="rounded border border-[#efc0ba] bg-[var(--coral-soft)] p-3 text-sm text-[var(--coral)]" role="alert">{error}</p>}
