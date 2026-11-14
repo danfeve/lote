@@ -41,10 +41,18 @@ try {
   }
   const vista = await client.query("select to_regclass('public.v_lotes') as vista");
   resultado("vista public.v_lotes existe", vista.rows[0]?.vista !== null);
+  const medidas = await client.query(
+    `select count(*)::int as total
+     from information_schema.columns
+     where table_schema = 'public' and table_name = 'v_lotes'
+       and column_name = any($1::text[])`,
+    [["largo_pieza_mm", "ancho_pieza_mm", "alto_pieza_mm"]],
+  );
+  resultado("tres medidas por pieza disponibles", medidas.rows[0]?.total === 3);
   const migraciones = await client.query(
     "select count(*)::int as total from public.schema_migrations",
   );
-  resultado("dos migraciones registradas", migraciones.rows[0]?.total >= 2);
+  resultado("tres migraciones registradas", migraciones.rows[0]?.total >= 3);
 } catch (error) {
   console.error("FALLA: no fue posible verificar la base de datos.", error);
   fallas += 1;

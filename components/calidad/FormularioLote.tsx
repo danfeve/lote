@@ -13,6 +13,9 @@ export interface ValoresLote {
   fechaProduccion: string;
   cantidadProducida: number;
   proveedorId: number;
+  largoPiezaMm?: number | null;
+  anchoPiezaMm?: number | null;
+  altoPiezaMm?: number | null;
 }
 
 export function FormularioLote({
@@ -28,6 +31,9 @@ export function FormularioLote({
   const [producto, setProducto] = useState(inicial?.producto ?? "");
   const [fechaProduccion, setFechaProduccion] = useState(inicial?.fechaProduccion ?? hoy);
   const [cantidad, setCantidad] = useState(String(inicial?.cantidadProducida ?? ""));
+  const [largoPiezaMm, setLargoPiezaMm] = useState(String(inicial?.largoPiezaMm ?? ""));
+  const [anchoPiezaMm, setAnchoPiezaMm] = useState(String(inicial?.anchoPiezaMm ?? ""));
+  const [altoPiezaMm, setAltoPiezaMm] = useState(String(inicial?.altoPiezaMm ?? ""));
   const [proveedorId, setProveedorId] = useState(String(inicial?.proveedorId ?? ""));
   const [proveedores, setProveedores] = useState<FilaProveedor[]>([]);
   const [error, setError] = useState("");
@@ -53,6 +59,13 @@ export function FormularioLote({
   async function guardar(evento: React.FormEvent<HTMLFormElement>) {
     evento.preventDefault();
     setError("");
+    const medidas = [largoPiezaMm, anchoPiezaMm, altoPiezaMm];
+    const medidasCompletas = medidas.every((medida) => medida.trim() !== "");
+    const sinMedidas = medidas.every((medida) => medida.trim() === "");
+    if (!medidasCompletas && !sinMedidas) {
+      setError("Ingrese el largo, el ancho y el alto de cada pieza, o deje las tres medidas vacías.");
+      return;
+    }
     setCargando(true);
     try {
       const datos = {
@@ -60,6 +73,9 @@ export function FormularioLote({
         producto,
         fechaProduccion,
         cantidadProducida: Number(cantidad),
+        largoPiezaMm: medidasCompletas ? Number(largoPiezaMm) : undefined,
+        anchoPiezaMm: medidasCompletas ? Number(anchoPiezaMm) : undefined,
+        altoPiezaMm: medidasCompletas ? Number(altoPiezaMm) : undefined,
         proveedorId: Number(proveedorId),
       };
       const destino = editar ? `/api/calidad/lotes/${encodeURIComponent(inicial!.codigo)}` : "/api/calidad/lotes";
@@ -110,6 +126,15 @@ export function FormularioLote({
           <div><label className="block text-sm font-semibold" htmlFor="fecha">Fecha de producción</label><input id="fecha" className="field mt-2" type="date" max={hoy} required value={fechaProduccion} onChange={(evento) => setFechaProduccion(evento.target.value)} /></div>
           <div><label className="block text-sm font-semibold" htmlFor="cantidad">Cantidad producida</label><input id="cantidad" className="field mt-2 tabular-nums" type="number" min="1" step="1" required value={cantidad} onChange={(evento) => setCantidad(evento.target.value)} /></div>
         </div>
+        <fieldset className="rounded border border-[var(--line)] p-4">
+          <legend className="px-1 text-sm font-semibold">Dimensiones de cada pieza (mm)</legend>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div><label className="block text-sm" htmlFor="largo-pieza">Largo</label><input id="largo-pieza" className="field mt-2 tabular-nums" type="number" min="0.01" max="99999999.99" step="0.01" inputMode="decimal" value={largoPiezaMm} onChange={(evento) => setLargoPiezaMm(evento.target.value)} placeholder="Opcional" /></div>
+            <div><label className="block text-sm" htmlFor="ancho-pieza">Ancho</label><input id="ancho-pieza" className="field mt-2 tabular-nums" type="number" min="0.01" max="99999999.99" step="0.01" inputMode="decimal" value={anchoPiezaMm} onChange={(evento) => setAnchoPiezaMm(evento.target.value)} placeholder="Opcional" /></div>
+            <div><label className="block text-sm" htmlFor="alto-pieza">Alto</label><input id="alto-pieza" className="field mt-2 tabular-nums" type="number" min="0.01" max="99999999.99" step="0.01" inputMode="decimal" value={altoPiezaMm} onChange={(evento) => setAltoPiezaMm(evento.target.value)} placeholder="Opcional" /></div>
+          </div>
+          <p className="mt-3 text-xs leading-5 text-[var(--muted)]">Ingrese las tres medidas de una pieza. Puede dejarlas vacías si aún no se conocen.</p>
+        </fieldset>
         <div className="rounded border border-[#d8e6d9] bg-[#f3f8f1] p-4"><p className="text-xs font-bold uppercase text-[var(--forest)]">Muestra mínima</p><p className="mt-1 text-sm leading-6">{muestra}</p></div>
         <div><div className="flex items-center justify-between gap-3"><label className="block text-sm font-semibold" htmlFor="proveedor">Proveedor</label><button type="button" onClick={() => setModalProveedor(true)} className="inline-flex min-h-9 items-center gap-1.5 rounded px-2 text-sm font-semibold text-[var(--forest)] hover:bg-[var(--lime-soft)]"><Plus size={15} />Agregar proveedor</button></div><select id="proveedor" className="field mt-2" required value={proveedorId} onChange={(evento) => setProveedorId(evento.target.value)}><option value="">Seleccione un proveedor</option>{proveedoresDisponibles.map((proveedor) => <option key={proveedor.id} value={proveedor.id}>{proveedor.nombre}{proveedor.activo ? "" : " · Inactivo (actual)"}</option>)}</select></div>
         {error && <p className="rounded border border-[#efc0ba] bg-[var(--coral-soft)] p-3 text-sm text-[var(--coral)]" role="alert">{error}</p>}

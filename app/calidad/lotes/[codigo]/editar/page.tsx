@@ -24,5 +24,5 @@ export default async function EditarLotePage({ params }: Propiedades) {
   if (lote.estado !== "pendiente" || lote.totalInspecciones !== 0) {
     return <section className="surface p-6"><h1 className="text-2xl font-semibold">Lote no modificable</h1><p className="mt-2 text-sm text-[var(--muted)]">Solo se pueden editar lotes pendientes sin inspecciones.</p><Link href={`/calidad/lotes/${encodeURIComponent(lote.codigo)}`} className="mt-4 inline-flex min-h-10 items-center text-sm font-semibold text-[var(--forest)]"><ArrowLeft size={15} className="mr-2" />Volver al lote</Link></section>;
   }
-  return <FormularioLote hoy={hoyBogota()} inicial={{ codigo: lote.codigo, producto: lote.producto, fechaProduccion: lote.fechaProduccion, cantidadProducida: lote.cantidadProducida, proveedorId: lote.proveedorId }} />;
+  return <FormularioLote hoy={hoyBogota()} inicial={{ codigo: lote.codigo, producto: lote.producto, fechaProduccion: lote.fechaProduccion, cantidadProducida: lote.cantidadProducida, proveedorId: lote.proveedorId, largoPiezaMm: lote.largoPiezaMm, anchoPiezaMm: lote.anchoPiezaMm, altoPiezaMm: lote.altoPiezaMm }} />;
 }

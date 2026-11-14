@@ -24,6 +24,9 @@ interface LoteDb {
   proveedor_activo: boolean;
   fecha_produccion: string;
   cantidad_producida: number;
+  largo_pieza_mm: number | null;
+  ancho_pieza_mm: number | null;
+  alto_pieza_mm: number | null;
   muestra_minima: number;
   estado: EstadoLote;
   total_inspecciones: number;
@@ -45,6 +48,9 @@ function mapearLote(fila: LoteDb): FilaLote {
     proveedorActivo: fila.proveedor_activo,
     fechaProduccion: fila.fecha_produccion,
     cantidadProducida: fila.cantidad_producida,
+    largoPiezaMm: fila.largo_pieza_mm ?? null,
+    anchoPiezaMm: fila.ancho_pieza_mm ?? null,
+    altoPiezaMm: fila.alto_pieza_mm ?? null,
     muestraMinima: fila.muestra_minima,
     estado: fila.estado,
     totalInspecciones: fila.total_inspecciones,
@@ -117,9 +123,12 @@ export async function registrarLote(datos: DatosLote): Promise<FilaLote> {
       await verificarProveedorActivo(tx, datos.proveedorId);
       await tx.query(
         `insert into public.lotes
-         (codigo, producto, fecha_produccion, cantidad_producida, proveedor_id, muestra_minima)
-         values ($1, $2, $3, $4, $5, $6)`,
-        [codigo, datos.producto, datos.fechaProduccion, datos.cantidadProducida, datos.proveedorId, muestraMinima],
+         (codigo, producto, fecha_produccion, cantidad_producida, proveedor_id, muestra_minima,
+          largo_pieza_mm, ancho_pieza_mm, alto_pieza_mm)
+         values ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+        [codigo, datos.producto, datos.fechaProduccion, datos.cantidadProducida,
+          datos.proveedorId, muestraMinima, datos.largoPiezaMm ?? null,
+          datos.anchoPiezaMm ?? null, datos.altoPiezaMm ?? null],
       );
       const filas = await consultarLoteTx(tx, codigo);
       return mapearLote(filas[0]);
@@ -149,10 +158,13 @@ export async function actualizarLote(
         `update public.lotes
          set codigo = $1, producto = $2, fecha_produccion = $3,
              cantidad_producida = $4, proveedor_id = $5, muestra_minima = $6,
+           largo_pieza_mm = $7, ancho_pieza_mm = $8, alto_pieza_mm = $9,
              updated_at = now()
-         where codigo = $7`,
+         where codigo = $10`,
         [nuevoCodigo, datos.producto, datos.fechaProduccion, datos.cantidadProducida,
-          datos.proveedorId, calcularMuestraMinima(datos.cantidadProducida), codigo],
+          datos.proveedorId, calcularMuestraMinima(datos.cantidadProducida),
+          datos.largoPiezaMm ?? null, datos.anchoPiezaMm ?? null,
+          datos.altoPiezaMm ?? null, codigo],
       );
       const filas = await consultarLoteTx(tx, nuevoCodigo);
       return mapearLote(filas[0]);

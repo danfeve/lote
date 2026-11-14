@@ -22,6 +22,9 @@ export interface FilaLote {
   proveedorActivo: boolean;
   fechaProduccion: string;
   cantidadProducida: number;
+  largoPiezaMm: number | null;
+  anchoPiezaMm: number | null;
+  altoPiezaMm: number | null;
   muestraMinima: number;
   estado: EstadoLote;
   totalInspecciones: number;
